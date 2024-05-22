@@ -1,0 +1,33 @@
+
+1. Install Apache on your Ubuntu EC2 Instance:
+sudo apt update   # Update package repository
+sudo apt install apache2   # Install Apache web server
+
+2. Enable Required Apache Modules:
+sudo a2enmod proxy   # Enable the Apache proxy module
+sudo a2enmod proxy_http   # Enable the Apache proxy_http module
+sudo systemctl restart apache2   # Restart Apache to apply changes
+
+3. Configure Apache as a Reverse Proxy:
+Create a configuration file for each domain in the /etc/apache2/sites-available/ directory:
+
+
+sudo nano /etc/apache2/sites-available/noble.conf
+
+Add the following configuration for noble.ae/odoo:
+
+apache
+
+<VirtualHost *:80>
+    ServerName noble.ae
+
+    ProxyPass /odoo http://localhost:8069/
+    ProxyPassReverse /odoo http://localhost:8069/
+</VirtualHost>
+
+4. Enable the Virtual Hosts:
+sudo a2ensite noble.conf   # Enable noble virtual host
+sudo systemctl restart apache2   # Restart Apache to apply changes
+
+5. Adjust Firewall:
+sudo ufw allow 'Apache Full'

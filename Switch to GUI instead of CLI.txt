@@ -1,0 +1,86 @@
+1. Update the Package Lists
+
+First, ensure your package lists are up-to-date:
+sudo apt-get update
+
+2. Install XFCE4 Desktop Environment
+
+First we fix broken dependancies
+sudo apt --fix-broken install
+
+Then we Install the XFCE4 desktop environment along with some additional useful packages:
+sudo apt-get install xfce4 xfce4-goodies
+
+3. Install and Configure a Display Manager (LightDM)
+
+Install LightDM, which is a lightweight display manager suitable for XFCE:
+sudo apt-get install lightdm
+
+4. Configure LightDM for Automatic Login
+
+To avoid needing a password, configure LightDM to automatically log in your existing user. Open the LightDM configuration file for editing:
+
+
+--First, navigate to the lightdm.conf.d directory:
+cd /etc/lightdm/lightdm.conf.d
+
+--Create and Edit a Custom Configuration File
+
+Create a new configuration file, for example, 50-myconfig.conf:
+sudo nano 50-myconfig.conf
+
+--Add the Configuration for Automatic Login
+[Seat:*]
+autologin-user=ubuntu
+autologin-user-timeout=0
+
+Replace ubuntu with your actual username if it’s different.
+Save and Exit the Editor
+
+--Verify the Configuration
+
+Ensure the custom configuration file has the correct content by listing it:
+cat /etc/lightdm/lightdm.conf.d/50-myconfig.conf
+
+You should see the lines you added.
+
+5. Install a VNC Server
+
+Install the TightVNC server:
+
+sudo apt-get install tightvncserver
+
+6. Configure the VNC Server
+
+--Run the VNC server to create initial configuration files:
+vncserver
+
+You'll be prompted to create a password. Enter a password and complete the setup. You can choose a view-only password if you want
+
+Password: Abid123
+
+--Stop the VNC server so you can configure it:
+vncserver -kill :1
+
+--Edit the VNC startup configuration file:
+sudo nano ~/.vnc/xstartup
+
+--Replace the contents with the following lines:
+#!/bin/bash
+xrdb $HOME/.Xresources
+startxfce4 &
+
+--Make the file executable:
+chmod +x ~/.vnc/xstartup
+
+7. Start the VNC Server
+
+Start the VNC server again with the configured settings:
+vncserver :1
+
+8. Connect Using a VNC Client
+TightVNC
+Use password: Abid123
+
+9. Modify Ec2 Security Group 
+Allow inbound traffic on port 5901 for custome TCP rule

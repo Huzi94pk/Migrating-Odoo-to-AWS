@@ -1,0 +1,63 @@
+******************************************************************
+To extend the filesystem on your EC2 instance after increasing the size of the EBS volume, you'll need to follow these general steps:
+
+    Identify the EBS volume: Verify that the EBS volume's size has been increased to 40GB.
+
+    Connect to your EC2 instance: Use SSH to connect to your EC2 instance.
+
+    Identify the filesystem: Determine the filesystem type of the volume. It's typically ext4 for Ubuntu instances, but you can verify this using the lsblk command to list block devices and their filesystem types:
+
+lsblk -f
+
+Resize the partition: If the filesystem is not using all available space, you'll need to resize the partition. You can use the growpart command (if available) to resize the partition:
+******************************************************************
+
+
+sudo growpart /dev/nvme0n1 1
+
+Replace /dev/nvme0n1 with the appropriate device name for your instance.
+
+Resize the filesystem: After resizing the partition, you need to resize the 
+
+1. Identift the file system
+lsblk -f
+
+Result: 
+NAME     FSTYPE   FSVER LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0    squashfs 4.0                                                              0   100% /snap/amazon-ssm-agent/7983
+loop1    squashfs 4.0                                                              0   100% /snap/amazon-ssm-agent/7993
+loop2    squashfs 4.0                                                              0   100% /snap/core18/2812
+loop3    squashfs 4.0                                                              0   100% /snap/core18/2823
+loop5    squashfs 4.0                                                              0   100% /snap/core20/2264
+loop6    squashfs 4.0                                                              0   100% /snap/lxd/27948
+loop7    squashfs 4.0                                                              0   100% /snap/lxd/28373
+loop8    squashfs 4.0                                                              0   100% /snap/snapd/21184
+loop9    squashfs 4.0                                                              0   100% /snap/snapd/21465
+loop10                                                                             0   100% /snap/core20/2318
+xvda                                                                                        
+├─xvda1  ext4     1.0   cloudimg-rootfs 9e71e708-e903-4c26-8506-d85b84605ba0   11.9G    31% /
+├─xvda14                                                                                    
+└─xvda15 vfat     FAT32 UEFI            A62D-E731                              98.3M     6% /boot/efi
+ubuntu@ip-172-31-18-81:~$ 
+ChatGPT
+
+Based on the output of lsblk -f, it appears that your root filesystem (/) is mounted on /dev/xvda1, and it is using an ext4 filesystem. Here's how you can extend the filesystem:
+
+
+2. Resize partition
+sudo growpart /dev/xvda 1
+
+    Resize the partition: Since you've already resized the EBS volume, you can now resize the partition to use the additional space. Run the following command to resize the partition:
+
+3. Resize File System
+sudo resize2fs /dev/xvda1
+
+Resize the filesystem: After resizing the partition, you need to resize the filesystem to make use of the additional space. Use the following command:
+
+
+4. Verify the updated filesystem
+ df -h
+
+    This command will display filesystem usage, showing if the filesystem has been extended.
+
+After following these steps, your root filesystem should have been extended to utilize the additional space provided by the resized EBS volume.
